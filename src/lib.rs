@@ -54,7 +54,8 @@ fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> quote:
                 0 => {
                     quote! {
                         #name::#id() => {
-                            f.write_str(stringify!(#id()))
+                            f.write_str(stringify!(#id))?;
+                            f.write_str("()")
                         }
                     }
                 }
