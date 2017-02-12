@@ -4,7 +4,7 @@
 //!
 //! Actually, the most complex enum definition that this crate supports is like this one:
 //!
-//! ```rust
+//! ```rust,ignore
 //! #[derive(Display)]
 //! pub enum FooBar {
 //!     Foo,
@@ -15,7 +15,7 @@
 //!
 //! The above code will be expanded (roughly, without the enum definition) into this code:
 //!
-//! ```rust
+//! ```rust,ignore
 //! impl Display for FooBar {
 //!     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
 //!         match *self {
@@ -29,7 +29,7 @@
 //!
 //! ## Examples
 //!
-//! ```rust
+//! ```rust,ignore
 //! #[macro_use]
 //! extern crate enum_display_derive;
 //!
