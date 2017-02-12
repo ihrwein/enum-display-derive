@@ -25,7 +25,9 @@ pub fn display(input: TokenStream) -> TokenStream {
 }
 
 fn impl_display(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
-    let variants = impl_display_for_variants(name, variants);
+    let variants = variants.iter()
+        .map(|variant| impl_display_for_variant(name, variant));
+
     quote! {
         impl Display for #name {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
@@ -37,42 +39,38 @@ fn impl_display(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
     }
 }
 
-fn impl_display_for_variants(name: &syn::Ident, variants: &[syn::Variant]) -> Vec<quote::Tokens> {
-    variants.iter()
-        .map(|variant| {
-            let id = &variant.ident;
-            match variant.data {
-                syn::VariantData::Unit => {
-                    quote! {
-                        #name::#id => {
-                            f.write_str(stringify!(#id))
-                        }
-                    }
+fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> quote::Tokens {
+    let id = &variant.ident;
+    match variant.data {
+        syn::VariantData::Unit => {
+            quote! {
+                #name::#id => {
+                    f.write_str(stringify!(#id))
                 }
-                syn::VariantData::Tuple(ref fields) => {
-                    match fields.len() {
-                        0 => {
-                            quote! {
-                                #name::#id() => {
-                                    f.write_str(stringify!(#id()))
-                                }
-                            }
-                        }
-                        1 => {
-                            quote! {
-                                #name::#id(ref inner) => {
-                                    ::std::fmt::Display::fmt(inner, f)
-                                }
-                            }
-                        }
-                        _ => {
-                            panic!("#[derive(Display)] does not support tupe variants with more \
-                                    than one fields")
-                        }
-                    }
-                }
-                _ => panic!("#[derive(Display)] works only with unit and tuple variants"),
             }
-        })
-        .collect()
+        }
+        syn::VariantData::Tuple(ref fields) => {
+            match fields.len() {
+                0 => {
+                    quote! {
+                        #name::#id() => {
+                            f.write_str(stringify!(#id()))
+                        }
+                    }
+                }
+                1 => {
+                    quote! {
+                        #name::#id(ref inner) => {
+                            ::std::fmt::Display::fmt(inner, f)
+                        }
+                    }
+                }
+                _ => {
+                    panic!("#[derive(Display)] does not support tuple variants with more than one \
+                            fields")
+                }
+            }
+        }
+        _ => panic!("#[derive(Display)] works only with unit and tuple variants"),
+    }
 }
