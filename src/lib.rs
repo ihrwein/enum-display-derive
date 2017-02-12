@@ -1,3 +1,65 @@
+//! # derive `Display` for simple enums
+//!
+//! You can derive the `Display` trait for simple enums.
+//!
+//! Actually, the most complex enum definition that this crate supports is like this one:
+//!
+//! ```rust
+//! #[derive(Display)]
+//! pub enum FooBar {
+//!     Foo,
+//!     Bar(),
+//!     FooBar(i32), // some wrapped type which implements Display
+//! }
+//! ```
+//!
+//! The above code will be expanded (roughly, without the enum definition) into this code:
+//!
+//! ```rust
+//! impl Display for FooBar {
+//!     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+//!         match *self {
+//!             FooBar::Foo => f.write_str("Foo"),
+//!             FooBar::Bar => f.write_str("Bar()"),
+//!             FooBar::FooBar(ref inner) => ::std::fmt::Display::fmt(inner, f),
+//!         }
+//!     }
+//! }
+//! ```
+//!
+//! ## Examples
+//!
+//! ```rust
+//! #[macro_use]
+//! extern crate enum_display_derive;
+//!
+//! use std::fmt::Display;
+//!
+//! #[derive(Display)]
+//! enum FizzBuzz {
+//!    Fizz,
+//!    Buzz,
+//!    FizzBuzz,
+//!    Number(u64),
+//! }
+//!
+//! fn fb(i: u64) {
+//!    match (i % 3, i % 5) {
+//!        (0, 0) => FizzBuzz::FizzBuzz,
+//!        (0, _) => FizzBuzz::Fizz,
+//!        (_, 0) => FizzBuzz::Buzz,
+//!        (_, _) => FizzBuzz::Number(i),
+//!    }
+//! }
+//!
+//! fn main() {
+//!    for i in 0..100 {
+//!        println!("{}", fb(i));
+//!    }
+//! }
+//! ```
+//!
+
 extern crate proc_macro;
 extern crate syn;
 #[macro_use]
@@ -6,6 +68,7 @@ extern crate quote;
 use proc_macro::TokenStream;
 
 #[proc_macro_derive(Display)]
+#[doc(hidden)]
 pub fn display(input: TokenStream) -> TokenStream {
     // Construct a string representation of the type definition
     let s = input.to_string();
