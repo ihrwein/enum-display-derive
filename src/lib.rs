@@ -49,7 +49,29 @@ fn impl_display_for_variants(name: &syn::Ident, variants: &[syn::Variant]) -> Ve
                         }
                     }
                 }
-                _ => panic!("#[derive(Display)] works only with unit variants"),
+                syn::VariantData::Tuple(ref fields) => {
+                    match fields.len() {
+                        0 => {
+                            quote! {
+                                #name::#id() => {
+                                    f.write_str(stringify!(#id()))
+                                }
+                            }
+                        }
+                        1 => {
+                            quote! {
+                                #name::#id(ref inner) => {
+                                    ::std::fmt::Display::fmt(inner, f)
+                                }
+                            }
+                        }
+                        _ => {
+                            panic!("#[derive(Display)] does not support tupe variants with more \
+                                    than one fields")
+                        }
+                    }
+                }
+                _ => panic!("#[derive(Display)] works only with unit and tuple variants"),
             }
         })
         .collect()
