@@ -33,6 +33,20 @@ fn main() {
 }
 ```
 
+You should see the following output:
+
+```
+FizzBuzz
+1
+2
+Fizz
+4
+Buzz
+Fizz
+7
+...
+```
+
 ## License
 
 Licensed under either of
