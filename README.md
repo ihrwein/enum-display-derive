@@ -17,7 +17,7 @@ enum FizzBuzz {
    Number(u64),
 }
 
-fn fb(i: u64) {
+fn fb(i: u64) -> FizzBuzz {
    match (i % 3, i % 5) {
        (0, 0) => FizzBuzz::FizzBuzz,
        (0, _) => FizzBuzz::Fizz,
