@@ -1,5 +1,10 @@
 # Derive Display trait for enums
 
+[![Build Status](https://travis-ci.org/ihrwein/enum-display-derive.svg?branch=master)](https://travis-ci.org/ihrwein/enum-display-derive)
+[![crates.io](http://meritbadge.herokuapp.com/enum-display-derive)](https://crates.io/crates/enum-display-derive)
+
+[Documentation](https://docs.rs/enum-display-derive)
+
 This crate can derive a `Display` implementation for very simple enums,
 like the following one:
 
