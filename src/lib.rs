@@ -17,7 +17,7 @@
 //!
 //! ```rust,ignore
 //! impl Display for FooBar {
-//!     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+//!     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
 //!         match *self {
 //!             FooBar::Foo => f.write_str("Foo"),
 //!             FooBar::Bar => f.write_str("Bar()"),
@@ -93,7 +93,7 @@ fn impl_display(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
 
     quote! {
         impl Display for #name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
                 match *self {
                     #(#variants)*
                 }
