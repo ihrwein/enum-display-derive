@@ -61,6 +61,7 @@
 //!
 
 extern crate proc_macro;
+extern crate proc_macro2;
 extern crate syn;
 #[macro_use]
 extern crate quote;
@@ -70,25 +71,20 @@ use proc_macro::TokenStream;
 #[proc_macro_derive(Display)]
 #[doc(hidden)]
 pub fn display(input: TokenStream) -> TokenStream {
-    // Construct a string representation of the type definition
-    let s = input.to_string();
-
     // Parse the string representation
-    let ast = syn::parse_macro_input(&s).unwrap();
+    let ast: syn::DeriveInput = syn::parse(input).unwrap();
 
-    let gen = match ast.body {
-        syn::Body::Enum(ref variants) => {
+    match ast.data {
+        syn::Data::Enum(ref enum_data) => {
             let name = &ast.ident;
-            impl_display(name, variants)
+            impl_display(name, enum_data).into()
         }
         _ => panic!("#[derive(Display)] works only on enums"),
-    };
-
-    gen.parse().unwrap()
+    }
 }
 
-fn impl_display(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
-    let variants = variants.iter()
+fn impl_display(name: &syn::Ident, data: &syn::DataEnum) -> proc_macro2::TokenStream {
+    let variants = data.variants.iter()
         .map(|variant| impl_display_for_variant(name, variant));
 
     quote! {
@@ -102,18 +98,18 @@ fn impl_display(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
     }
 }
 
-fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> quote::Tokens {
+fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> proc_macro2::TokenStream {
     let id = &variant.ident;
-    match variant.data {
-        syn::VariantData::Unit => {
+    match variant.fields {
+        syn::Fields::Unit => {
             quote! {
                 #name::#id => {
                     f.write_str(stringify!(#id))
                 }
             }
         }
-        syn::VariantData::Tuple(ref fields) => {
-            match fields.len() {
+        syn::Fields::Unnamed(ref fields) => {
+            match fields.unnamed.len() {
                 0 => {
                     quote! {
                         #name::#id() => {
