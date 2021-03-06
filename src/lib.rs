@@ -84,7 +84,9 @@ pub fn display(input: TokenStream) -> TokenStream {
 }
 
 fn impl_display(name: &syn::Ident, data: &syn::DataEnum) -> proc_macro2::TokenStream {
-    let variants = data.variants.iter()
+    let variants = data
+        .variants
+        .iter()
         .map(|variant| impl_display_for_variant(name, variant));
 
     quote! {
@@ -108,29 +110,29 @@ fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> proc_m
                 }
             }
         }
-        syn::Fields::Unnamed(ref fields) => {
-            match fields.unnamed.len() {
-                0 => {
-                    quote! {
-                        #name::#id() => {
-                            f.write_str(stringify!(#id))?;
-                            f.write_str("()")
-                        }
+        syn::Fields::Unnamed(ref fields) => match fields.unnamed.len() {
+            0 => {
+                quote! {
+                    #name::#id() => {
+                        f.write_str(stringify!(#id))?;
+                        f.write_str("()")
                     }
-                }
-                1 => {
-                    quote! {
-                        #name::#id(ref inner) => {
-                            ::std::fmt::Display::fmt(inner, f)
-                        }
-                    }
-                }
-                _ => {
-                    panic!("#[derive(Display)] does not support tuple variants with more than one \
-                            fields")
                 }
             }
-        }
+            1 => {
+                quote! {
+                    #name::#id(ref inner) => {
+                        ::std::fmt::Display::fmt(inner, f)
+                    }
+                }
+            }
+            _ => {
+                panic!(
+                    "#[derive(Display)] does not support tuple variants with more than one \
+                            fields"
+                )
+            }
+        },
         _ => panic!("#[derive(Display)] works only with unit and tuple variants"),
     }
 }
