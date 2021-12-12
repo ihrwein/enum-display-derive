@@ -12,8 +12,6 @@ like the following one:
 #[macro_use]
 extern crate enum_display_derive;
 
-use std::fmt::Display;
-
 #[derive(Display)]
 enum FizzBuzz {
    Fizz,

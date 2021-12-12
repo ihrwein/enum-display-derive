@@ -1,8 +1,6 @@
 #[macro_use]
 extern crate enum_display_derive;
 
-use std::fmt::Display;
-
 #[test]
 fn test_derive() {
     #[derive(Display)]
