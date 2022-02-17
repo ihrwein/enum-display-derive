@@ -1,6 +1,6 @@
 [package]
 name = "enum-display-derive"
-version = "0.1.2-alpha.0"
+version = "0.1.2-alpha.1"
 authors = ["Tibor Benke <ihrwein@gmail.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
@@ -10,6 +10,7 @@ documentation = "https://docs.rs/enum-display-derive"
 description = """
 Display trait's custom derive for simple enums.
 """
+edition = "2021"
 
 [lib]
 proc-macro = true

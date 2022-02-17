@@ -4,7 +4,9 @@
 //!
 //! Actually, the most complex enum definition that this crate supports is like this one:
 //!
-//! ```rust,ignore
+//! ```rust
+//! # #[no_std]
+//! # use enum_display_derive::Display;
 //! #[derive(Display)]
 //! pub enum FooBar {
 //!     Foo,
@@ -17,11 +19,11 @@
 //!
 //! ```rust,ignore
 //! impl Display for FooBar {
-//!     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
+//!     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::result::Result<(), ::core::fmt::Error> {
 //!         match *self {
 //!             FooBar::Foo => f.write_str("Foo"),
 //!             FooBar::Bar => f.write_str("Bar()"),
-//!             FooBar::FooBar(ref inner) => ::std::fmt::Display::fmt(inner, f),
+//!             FooBar::FooBar(ref inner) => ::core::fmt::Display::fmt(inner, f),
 //!         }
 //!     }
 //! }
@@ -29,11 +31,9 @@
 //!
 //! ## Examples
 //!
-//! ```rust,ignore
+//! ```rust
 //! #[macro_use]
 //! extern crate enum_display_derive;
-//!
-//! use std::fmt::Display;
 //!
 //! #[derive(Display)]
 //! enum FizzBuzz {
@@ -43,7 +43,7 @@
 //!    Number(u64),
 //! }
 //!
-//! fn fb(i: u64) {
+//! fn fb(i: u64) -> FizzBuzz {
 //!    match (i % 3, i % 5) {
 //!        (0, 0) => FizzBuzz::FizzBuzz,
 //!        (0, _) => FizzBuzz::Fizz,
@@ -90,8 +90,8 @@ fn impl_display(name: &syn::Ident, data: &syn::DataEnum) -> proc_macro2::TokenSt
         .map(|variant| impl_display_for_variant(name, variant));
 
     quote! {
-        impl Display for #name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
+        impl ::core::fmt::Display for #name {
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::result::Result<(), ::core::fmt::Error> {
                 match *self {
                     #(#variants)*
                 }
@@ -122,7 +122,7 @@ fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> proc_m
             1 => {
                 quote! {
                     #name::#id(ref inner) => {
-                        ::std::fmt::Display::fmt(inner, f)
+                        ::core::fmt::Display::fmt(inner, f)
                     }
                 }
             }
