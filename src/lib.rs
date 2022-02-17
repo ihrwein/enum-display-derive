@@ -90,8 +90,8 @@ fn impl_display(name: &syn::Ident, data: &syn::DataEnum) -> proc_macro2::TokenSt
         .map(|variant| impl_display_for_variant(name, variant));
 
     quote! {
-        impl std::fmt::Display for #name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::result::Result<(), ::std::fmt::Error> {
+        impl ::core::fmt::Display for #name {
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::result::Result<(), ::core::fmt::Error> {
                 match *self {
                     #(#variants)*
                 }
@@ -122,7 +122,7 @@ fn impl_display_for_variant(name: &syn::Ident, variant: &syn::Variant) -> proc_m
             1 => {
                 quote! {
                     #name::#id(ref inner) => {
-                        ::std::fmt::Display::fmt(inner, f)
+                        ::core::fmt::Display::fmt(inner, f)
                     }
                 }
             }

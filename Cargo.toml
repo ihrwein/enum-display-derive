@@ -10,6 +10,7 @@ documentation = "https://docs.rs/enum-display-derive"
 description = """
 Display trait's custom derive for simple enums.
 """
+edition = "2021"
 
 [lib]
 proc-macro = true
