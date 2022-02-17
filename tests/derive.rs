@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate enum_display_derive;
+use enum_display_derive::Display;
 
 #[test]
 fn test_derive() {
